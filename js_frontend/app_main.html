@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <!-- Tell IE to use the latest, best version. -->
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <!-- Make the application on mobile take up the full browser screen and disable user scaling. -->
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+        <title>Space Time Cube</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <link href="./static/fontawesome/css/all.css" rel="stylesheet">
+        <link href="https://cesium.com/downloads/cesiumjs/releases/1.67/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+        <!--link href="https://cesium.com/downloads/cesiumjs/releases/1.72/Build/Cesium/Widgets/widgets.css" rel="stylesheet"-->
+        <!--DATE TIME PICKER CSS-->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.0.1/css/tempusdominus-bootstrap-4.min.css" />
+        <!--MY STYLESHEETS-->
+        <link href="./css/geostreamviewer.css" rel="stylesheet">
+    </head>
+    <body>
+        <div class="container-fluid">
+            <nav class="navbar navbar-dark bg-dark">
+                <button id="visconf_popover" type="button" class="btn btn-secondary" data-toggle="popover" data-placement="bottom" data-popover-content="#visual-cfg"><i class="fas fa-align-justify"></i></button>
+                <a class="navbar-brand" href="#">
+                  <img src="" width="30" height="30" class="d-inline-block align-top" alt="">
+                  GeostreamVis
+                </a>
+            </nav>
+            <div class="row">
+                <div class="col-12">
+                    <div id="cesiumContainer" style="width: 100%; height:945px"></div>
+                </div>
+            </div>
+            <div id="visual-cfg" style="display:none;">
+                <div class="popover-heading">Configuration</div>
+                <div id="vis-cfg-body" class="popover-body">
+                    <form method="POST">
+                        <div class="form-group row">
+                          <label for="dataURL" class="col-sm-3 col-form-label">URL:</label>
+                          <div class="col-sm-9">
+                            <input id="dataurl" type="url" class="form-control form-control-sm" id="dataURL" placeholder="ws://209.203.42.117:9995/ws" pattern="https://.*" >
+                          </div>
+                        </div>
+                        <div class="card-title"> Area of Interest </div>
+                        <div id="aoi" class="form-group row">
+                            <label for="aoi_lonmin" class="col-sm-3 col-form-label">Lon Min:</label>
+                            <div class="col-sm-3">
+                              <input type="text" class="form-control form-control-sm" id="aoi_lonmin">
+                            </div>
+                            <label for="aoi_lonmax" class="col-sm-3 col-form-label">Lon Max:</label>
+                            <div class="col-sm-3">
+                              <input type="text" class="form-control form-control-sm" id="aoi_lonmax">
+                            </div>
+                            <label for="aoi_latmin" class="col-sm-3 col-form-label">Lat Min:</label>
+                            <div class="col-sm-3">
+                              <input type="text" class="form-control form-control-sm" id="aoi_latmin">
+                            </div>
+                            <label for="aoi_latmax" class="col-sm-3 col-form-label">Lat Max:</label>
+                            <div class="col-sm-3">
+                              <input type="text" class="form-control form-control-sm" id="aoi_latmax">
+                            </div>
+                        </div>
+                        <div class="card-title"> View Time of Interest </div>
+                        <div id="vtoi" class="form-group row">
+                            <label for="datetimepickerStart" class="col-sm-5 col-form-label">Start Time:</label>
+                            <div class='col-md-7'>
+                                <div class="form-group">
+                                    <div class="input-group date" id="datetimepickerStart" data-target-input="nearest">
+                                        <input type="text" class="form-control form-control-sm datetimepicker-input" data-target="#datetimepickerStart">
+                                        <div class="input-group-append" data-target="#datetimepickerStart" data-toggle="datetimepicker">
+                                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <label for="datetimepickerEnd" class="col-sm-5 col-form-label">End Time:</label>
+                            <div class='col-md-7'>
+                                <div class="form-group">
+                                    <div class="input-group date" id="datetimepickerEnd" data-target-input="nearest">
+                                        <input type="text" class="form-control form-control-sm datetimepicker-input" data-target="#datetimepickerEnd">
+                                        <div class="input-group-append" data-target="#datetimepickerEnd" data-toggle="datetimepicker">
+                                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <label for="interval-selector" class="col-sm-5 col-form-label">Time Interval:</label>
+                            <div class='col-md-7'>
+                                <div class="form-group">
+                                    <div class="input-group date" id="intervalUnits">
+                                        <input type="number" class="form-control form-control-sm" data-target="#intervalUnits" min="1" max="60"/>
+                                        <div id="intDropdown" class="input-group-append" data-target="#intervalUnits">
+                                            <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Select units</button>
+                                            <div class="dropdown-menu" id="buttondropdown" >
+                                                <a class="dropdown-item" href="#">Seconds</a>
+                                                <a class="dropdown-item" href="#">Minutes</a>
+                                                <a class="dropdown-item" href="#">Hours</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-title"> Analysis method: </div>
+                        <div id="methodspec" class="form-group row">
+                            <!--data type selector-->
+                            <label for="dataTypeSelector" class="col-sm-5 col-form-label">Data Type:</label>
+                            <div class='col-md-7'>
+                                <div class="form-group">
+                                    <div class="input-group date" id="dataTypeSelectorGroup">
+                                        <div id="dataTypeSelector" class="dropdown">
+                                            <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Select data type</button>
+                                            <div class="dropdown-menu" id="dataDropdown" >
+                                                <a class="dropdown-item" href="#">Transient</a>
+                                                <a class="dropdown-item" href="#">Stationary</a>
+                                                <a class="dropdown-item" href="#">Movement</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--method selector-->
+                            <label for="methodSelector" class="col-sm-5 col-form-label">Method:</label>
+                            <div class='col-md-7'>
+                                <div class="form-group">
+                                    <div class="input-group date" id="methodTypeSelectorGroup">
+                                        <div id="methodSelector" class="dropdown">
+                                            <button id="methodButton" class="btn btn-outline-secondary btn-sm dropdown-toggle" disabled="true" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">select method</button>
+                                            <div id="methodDropdown" class="dropdown-menu"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--method properties: only the appropriate options must be loaded for a selected method-->
+                            <div id="custom" class="col-md-12"></div>
+                            
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div id="charts">
+
+            </div>
+        </div>
+        <!--CESIUM JS-->
+        <script src="https://cesium.com/downloads/cesiumjs/releases/1.67/Build/Cesium/Cesium.js"></script>
+        <!--script src="https://cesium.com/downloads/cesiumjs/releases/1.72/Build/Cesium/Cesium.js"></script-->
+        <!-- BOOTSTRAP JS 4-->
+        <!--script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+        <!--DATE TIME PICKER-->
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.0.1/js/tempusdominus-bootstrap-4.min.js"></script>
+        <!-- Load d3.js -->
+        <script src="https://d3js.org/d3.v4.js"></script>
+        
+        <!--MY CUSTOM SCRIPTS-->
+        <script src="js/stationary.js"></script>
+        <!--script src="js/main_user_config.js"></script-->
+        <script type="text/javascript">
+            $(document).ready(function(){
+                $('#visconf_popover').popover({
+                    // or try this if css becomes a nightmare
+                    // return $('#visual-cfg').html();
+                    html: true,
+                    sanitize: false,
+                    content: function() {
+                    var content = $(this).attr("data-popover-content");
+                    return $(content).children(".popover-body").html();
+                    },
+                    title: function() {
+                    var title = $(this).attr("data-popover-content");
+                    return $(title).children(".popover-heading").html();
+                    }
+                }).on('shown.bs.popover', function () {
+                    // date time picker
+                    $('#datetimepickerStart').datetimepicker();
+                    $('#datetimepickerEnd').datetimepicker({
+                        useCurrent: false
+                    });
+                    $("#datetimepickerStart").on("change.datetimepicker", function (e) {
+                        $('#datetimepickerEnd').datetimepicker('minDate', e.date);
+                    });
+                    $("#datetimepickerEnd").on("change.datetimepicker", function (e) {
+                        $('#datetimepickerStart').datetimepicker('maxDate', e.date);
+                    });
+                    $("#buttondropdown a").click(function(){ // select from dropdowm element
+                        console.log($(this))
+                        var selText = $(this).text();
+                        $(this).parents('#intDropdown').find('.dropdown-toggle').html(selText+' <span class="caret"></span>');
+                    });
+                    // select data type; enable custom html to be loaded
+                    $("#dataDropdown a").click(function(){
+                        var selDataType = $(this).text();
+                        console.log(selDataType);
+                        $(this).parents('#dataTypeSelector').find('.dropdown-toggle').html(selDataType+' <span class="caret"></span>'); 
+                        if(selDataType === 'Transient'){
+                            var methods_list = ["Cluster", "Anormaly", "Categorise"] // list of available methods -algorithms
+                            console.log('=====transient methods========');
+                            $(this).parents().find('#methodspec #methodSelector #methodButton').prop('disabled', false);
+                            for(i=0; i<methods_list.length; i++){ // add list of methods to dropdown
+                                $(this).parents().find('#methodspec #methodSelector #methodDropdown').append(
+                                    '<a class="dropdown-item" href="#">' + methods_list[i]+ '</a>' 
+                                );
+                            };
+                            // load the html components specific to this section
+                            $("#methodDropdown a").click(function(){
+                                var selMethodType = $(this).text();
+                                console.log(selMethodType);
+                                if(selMethodType === 'Cluster'){
+                                    $(this).parents().find('#methodspec #custom').load("transientCFG.html", function(){ // append to existing div not replace!!!!
+                                        console.log('transient clusters');
+                                    });
+                                };
+                            });
+                        }
+                        else{ 
+                            $(this).parents().find('#methodspec #methodSelector #methodButton').prop('disabled', true);
+                        }
+                    });
+                });
+                // =================================CSS HELPERS ========================================================
+                
+            });
+        </script>
+    </body>
+</html>

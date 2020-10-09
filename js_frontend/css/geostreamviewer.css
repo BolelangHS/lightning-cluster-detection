@@ -1,0 +1,57 @@
+body{
+    color: #ffffff;
+    background-color: #000000;
+}
+.popover{
+    top: 5px !important;
+    left: 10px !important;
+    min-width: 20rem;
+    max-width: 30rem;
+    background-color: transparent;
+    font-size: small;
+
+}
+.popover .arrow {
+    left: 20px !important;
+}
+.popover .popover-header {
+    background-color: #343a40;
+    border-bottom: 1px solid #ebebeb;
+}
+.popover .popover-body {
+    color: #ffffff !important;
+}
+
+.form-control {
+    margin-bottom: 0.5rem;
+}
+
+.card-title {
+    background-color: gray;
+}
+
+#charts {
+    position: absolute;
+    top: 65px;
+    right: 350px;
+    width: 550px;
+    height: 250px;
+}
+div.parallelCoordinates{
+margin: 2em;
+}
+
+g.inactive path, g.active path{
+    fill: none;
+    stroke: rgb(72, 198, 240);
+    stroke-linecap:"round";
+    opacity: 0.6;
+}
+g.active path{
+    stroke:#eba02f;
+    opacity: 0.5;
+}
+.badge{
+    padding: 0.5rem;
+    margin-right: 0.25rem;
+}
